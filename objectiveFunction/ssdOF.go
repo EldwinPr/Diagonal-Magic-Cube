@@ -12,35 +12,17 @@ func SSDOF(cube [5][5][5]int) int {
 		return diff * diff
 	}
 
-	// Calculate the sum of squares of differences for rows, columns, and pillars
+	// Calculate the sum of squares of differences for rows, columns, and pillars in a combined loop
 	for z := 0; z < 5; z++ {
-		// Rows and Columns in each layer
 		for y := 0; y < 5; y++ {
-			// Row sum
-			rowSum := 0
+			rowSum, colSum, pillarSum := 0, 0, 0
 			for x := 0; x < 5; x++ {
 				rowSum += cube[z][y][x]
+				colSum += cube[z][x][y]
+				pillarSum += cube[x][y][z]
 			}
 			totalSum += squaredDifference(rowSum, target)
-		}
-
-		for x := 0; x < 5; x++ {
-			// Column sum
-			colSum := 0
-			for y := 0; y < 5; y++ {
-				colSum += cube[z][y][x]
-			}
 			totalSum += squaredDifference(colSum, target)
-		}
-	}
-
-	// Pillars
-	for x := 0; x < 5; x++ {
-		for y := 0; y < 5; y++ {
-			pillarSum := 0
-			for z := 0; z < 5; z++ {
-				pillarSum += cube[z][y][x]
-			}
 			totalSum += squaredDifference(pillarSum, target)
 		}
 	}
