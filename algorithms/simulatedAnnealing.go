@@ -4,10 +4,11 @@ import (
 	"DiagonalMagicCube/cubeFuncs"
 	"DiagonalMagicCube/objectiveFunction"
 	"math"
+	"math/rand"
 )
 
 func SimulatedAnnealing(cube [5][5][5]int) [5][5][5]int {
-	T := 1000000000.0 // Initial temperature
+	T := 3000000000.0 // Initial temperature
 	iteration := 1    // Iteration number
 
 	// helper function to update temperature
@@ -40,7 +41,7 @@ func SimulatedAnnealing(cube [5][5][5]int) [5][5][5]int {
 			cube = newcube
 		} else { // New cube has higher objective function value
 			prob := math.Exp(-float64(deltaE) / T)
-			if 0.2 < prob { // Accept new cube with random probability
+			if rand.Float64() < prob { // Accept new cube with random probability
 				cube = newcube
 			}
 		}
