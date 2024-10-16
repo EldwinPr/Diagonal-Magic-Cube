@@ -8,6 +8,23 @@ import (
 	"time"
 )
 
+// func main() {
+// 	cube := cubeFuncs.MakeCube()
+// 	cube = cubeFuncs.RandomizeCube(cube)
+// 	fmt.Println("Initial objective function value:", objectiveFunction.OF(cube))
+// 	start := time.Now()
+// 	cube = algorithms.SimulatedAnnealing(cube)
+// 	fmt.Println("Time taken:", time.Since(start))
+// 	fmt.Println("Final objective function value using Simulated Annealing:", objectiveFunction.OF(cube))
+// 	fmt.Println("Cube:", cube)
+// 	rowEr, colEr, pilEr, dfEr, dsEr := objectiveFunction.CheckForErrors(cube)
+// 	fmt.Println("Row erros:", rowEr)
+// 	fmt.Println("Col erros:", colEr)
+// 	fmt.Println("Pillar errors:", pilEr)
+// 	fmt.Println("Face diagonal errors:", dfEr)
+// 	fmt.Println("Space diagonal errors:", dsEr)
+// }
+
 func main() {
 	cube := cubeFuncs.MakeCube()
 	cube = cubeFuncs.RandomizeCube(cube)
