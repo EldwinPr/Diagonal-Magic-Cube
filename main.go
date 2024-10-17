@@ -1,227 +1,110 @@
 package main
 
 import (
-	"DiagonalMagicCube/algorithms"
-	"DiagonalMagicCube/cubeFuncs"
-	"DiagonalMagicCube/objectiveFunction"
 	"fmt"
-	"sync"
-	"time"
+
+	// for gui
+
+	"github.com/veandco/go-sdl2/sdl"
 )
 
+const (
+	winWidth  = 800
+	winHeight = 600
+)
+
+var cube [5][5][5]int = [5][5][5]int{
+	{{1, 2, 3, 4, 5}, {6, 7, 8, 9, 10}, {11, 12, 13, 14, 15}, {16, 17, 18, 19, 20}, {21, 22, 23, 24, 25}},
+	{{26, 27, 28, 29, 30}, {31, 32, 33, 34, 35}, {36, 37, 38, 39, 40}, {41, 42, 43, 44, 45}, {46, 47, 48, 49, 50}},
+	{{51, 52, 53, 54, 55}, {56, 57, 58, 59, 60}, {61, 62, 63, 64, 65}, {66, 67, 68, 69, 70}, {71, 72, 73, 74, 75}},
+	{{76, 77, 78, 79, 80}, {81, 82, 83, 84, 85}, {86, 87, 88, 89, 90}, {91, 92, 93, 94, 95}, {96, 97, 98, 99, 100}},
+	{{101, 102, 103, 104, 105}, {106, 107, 108, 109, 110}, {111, 112, 113, 114, 115}, {116, 117, 118, 119, 120}, {121, 122, 123, 124, 125}},
+}
+
 func main() {
-	input := 0
-	fmt.Print(" 1. Single run \n 2. Multiple run \n 3. All algorithms \n 4. Check objective function value\n input: ")
-	fmt.Scanln(&input)
-	switch input {
-	case 1:
-		Singular()
-	case 2:
-		Multiple()
-	case 3:
-		allAlgorithms()
-	case 4:
-		checkOF()
+	if err := sdl.Init(sdl.INIT_EVERYTHING); err != nil {
+		fmt.Printf("Error initializing SDL: %v\n", err)
+		return
+	}
+	defer sdl.Quit()
+
+	window, err := sdl.CreateWindow("Go OpenGL Buttons", sdl.WINDOWPOS_UNDEFINED, sdl.WINDOWPOS_UNDEFINED, winWidth, winHeight, sdl.WINDOW_SHOWN)
+	if err != nil {
+		fmt.Printf("Error creating window: %v\n", err)
+		return
+	}
+	defer window.Destroy()
+
+	surface, err := window.GetSurface()
+	if err != nil {
+		fmt.Printf("Error getting window surface: %v\n", err)
+		return
+	}
+
+	buttons := []sdl.Rect{
+		{X: 50, Y: 50, W: 200, H: 100},   // Button 1
+		{X: 300, Y: 50, W: 200, H: 100},  // Button 2
+		{X: 50, Y: 200, W: 200, H: 100},  // Button 3
+		{X: 300, Y: 200, W: 200, H: 100}, // Button 4
+	}
+
+	running := true
+	for running {
+		for event := sdl.PollEvent(); event != nil; event = sdl.PollEvent() {
+			switch t := event.(type) {
+			case *sdl.QuitEvent:
+				running = false
+			case *sdl.MouseButtonEvent:
+				if t.Type == sdl.MOUSEBUTTONDOWN {
+					for i, button := range buttons {
+						if t.X >= button.X && t.X <= button.X+button.W && t.Y >= button.Y && t.Y <= button.Y+button.H {
+							switch i {
+							case 0:
+								fmt.Println("Button 1 pressed: Executing search.Singular() and displaying cube")
+								drawCube(surface)
+							case 1:
+								fmt.Println("Button 2 pressed: Executing search.Multiple()")
+								// search.Multiple()
+							case 2:
+								fmt.Println("Button 3 pressed: Executing search.AllAlgorithms()")
+								// search.AllAlgorithms()
+							case 3:
+								fmt.Println("Button 4 pressed: Executing search.CheckOF()")
+								// search.CheckOF()
+							}
+						}
+					}
+				}
+			}
+		}
+
+		surface.FillRect(nil, 0x000000) // Fill the screen with black
+		for _, button := range buttons {
+			surface.FillRect(&button, 0x00FF00) // Draw buttons in green
+		}
+		window.UpdateSurface()
 	}
 }
 
-func Multiple() {
-	var totalInitialOF, totalFinalOF, totalAbsDif int
-	totalTime := time.Duration(0)
-	var totalRowEr, totalColEr, totalPilEr, totalDfEr, totalDsEr int
-	var wg sync.WaitGroup
-	var mu sync.Mutex
-	yes := false
-	cubeArr := [10][5][5][5]int{}
-	oFArr := [10]int{}
+func drawCube(surface *sdl.Surface) {
+	// Clear the surface
+	surface.FillRect(nil, 0x000000)
 
-	for i := 0; i < 10; i++ {
-		wg.Add(1)
-		go func(idx int) {
-			defer wg.Done()
-			cube := cubeFuncs.MakeCube()
-
-			// initiation
-			cube = cubeFuncs.RandomizeCube(cube)
-			initialOF := objectiveFunction.OF(cube)
-
-			start := time.Now()
-			cube = algorithms.SimulatedAnnealing(cube)
-			duration := time.Since(start)
-
-			finalOF := objectiveFunction.OF(cube)
-			absDif := objectiveFunction.AbsDOF(cube)
-			rowEr, colEr, pilEr, dfEr, dsEr := objectiveFunction.CheckForErrors(cube)
-
-			// record data with mutex lock to avoid data race
-			mu.Lock()
-			totalInitialOF += initialOF
-			totalFinalOF += finalOF
-			totalAbsDif += absDif
-			totalTime += duration
-			totalRowEr += rowEr
-			totalColEr += colEr
-			totalPilEr += pilEr
-			totalDfEr += dfEr
-			totalDsEr += dsEr
-			cubeArr[idx] = cube
-			oFArr[idx] = finalOF
-			if finalOF == 0 {
-				yes = true
+	// Draw the cube representation
+	cellSize := 20
+	startX := 50
+	startY := 350
+	for z := 0; z < 5; z++ {
+		for y := 0; y < 5; y++ {
+			for x := 0; x < 5; x++ {
+				rect := sdl.Rect{
+					X: int32(startX + x*cellSize + z*cellSize),
+					Y: int32(startY + y*cellSize + z*cellSize),
+					W: int32(cellSize - 2),
+					H: int32(cellSize - 2),
+				}
+				surface.FillRect(&rect, 0x00FFFF) // Draw the cube cell in cyan
 			}
-			mu.Unlock()
-		}(i)
-	}
-
-	wg.Wait()
-
-	fmt.Println("Mean initial objective function value:", totalInitialOF/10)
-	fmt.Println("Mean time taken:", totalTime/10)
-	fmt.Println("Mean final objective function value using Simulated Annealing:", totalFinalOF/10)
-	fmt.Println("Mean absolute difference final cube:", totalAbsDif/10)
-	fmt.Println("Mean row errors:", totalRowEr/10)
-	fmt.Println("Mean column errors:", totalColEr/10)
-	fmt.Println("Mean pillar errors:", totalPilEr/10)
-	fmt.Println("Mean face diagonal errors:", totalDfEr/10)
-	fmt.Println("Mean space diagonal errors:", totalDsEr/10)
-
-	bestIdx := 0
-	for i := 1; i < 10; i++ {
-		if oFArr[i] < oFArr[bestIdx] {
-			bestIdx = i
 		}
 	}
-
-	if yes {
-		fmt.Println("Solution found")
-		fmt.Println("Cube:", cubeArr[bestIdx])
-	} else {
-		fmt.Println("No solution found")
-		fmt.Println("Best cube:", cubeArr[bestIdx])
-		fmt.Println("Best objective function value:", oFArr[bestIdx])
-		fmt.Println("sum of deviations:", objectiveFunction.AbsDOF(cubeArr[bestIdx]))
-	}
 }
-
-func Singular() {
-	cube := cubeFuncs.MakeCube()
-	cube = cubeFuncs.RandomizeCube(cube)
-	fmt.Println("Initial objective function value:", objectiveFunction.OF(cube))
-	start := time.Now()
-	cube = algorithms.SimulatedAnnealing(cube)
-	fmt.Println("Time taken:", time.Since(start))
-	fmt.Println("Final objective function value using Simulated Annealing:", objectiveFunction.OF(cube))
-	fmt.Println("sum of deviations:", objectiveFunction.AbsDOF(cube))
-	fmt.Println("Cube:", cube)
-	rowEr, colEr, pilEr, dfEr, dsEr := objectiveFunction.CheckForErrors(cube)
-	fmt.Println("Row erros:", rowEr)
-	fmt.Println("Col erros:", colEr)
-	fmt.Println("Pillar errors:", pilEr)
-	fmt.Println("Face diagonal errors:", dfEr)
-	fmt.Println("Space diagonal errors:", dsEr)
-}
-
-func allAlgorithms() {
-	cube := cubeFuncs.MakeCube()
-	cube = cubeFuncs.RandomizeCube(cube)
-	initial := cube
-	fmt.Println("Initial objective function value:", objectiveFunction.OF(cube))
-
-	//Steepest Ascent Hill Climb
-	start := time.Now()
-	cube = algorithms.SteepestAscentHillClimb(cube)
-	fmt.Println("Time taken:", time.Since(start))
-	fmt.Println("Final objective function value using Steepest Ascent HC:", objectiveFunction.OF(cube))
-
-	// Hill Climb with Sideways Move
-	cube = initial
-	start = time.Now()
-	cube = algorithms.HillClimbWithSidewaysMove(cube)
-	fmt.Println("Time taken:", time.Since(start))
-	fmt.Println("Final objective function value using HC with sideways move:", objectiveFunction.OF(cube))
-
-	// Stochastic Hill Climb
-	cube = initial
-	start = time.Now()
-	cube = algorithms.StochasticHillClimb(cube)
-	fmt.Println("Time taken:", time.Since(start))
-	fmt.Println("Final objective function value using Stochastic HC:", objectiveFunction.OF(cube))
-
-	// Simulated Annealing
-	cube = initial
-	start = time.Now()
-	cube = algorithms.SimulatedAnnealing(cube)
-	fmt.Println("Time taken:", time.Since(start))
-	fmt.Println("Final objective function value using Simulated Annealing:", objectiveFunction.OF(cube))
-
-	// Genetic Algorithm
-	cube = initial
-	start = time.Now()
-	cube = algorithms.GeneticAlgorithm(cube)
-	fmt.Println("Time taken:", time.Since(start))
-	fmt.Println("Final objective function value using Genetic Algorithm:", objectiveFunction.OF(cube))
-}
-
-func checkOF() {
-	var initialCube = [5][5][5]int{
-		{{25, 16, 80, 104, 90}, {115, 98, 4, 1, 97}, {42, 111, 85, 2, 75}, {66, 72, 27, 102, 48}, {67, 18, 119, 106, 5}},
-		{{91, 77, 71, 6, 70}, {52, 64, 117, 69, 13}, {30, 118, 21, 123, 23}, {26, 39, 92, 44, 114}, {116, 17, 14, 73, 95}},
-		{{47, 61, 45, 76, 86}, {107, 43, 38, 33, 94}, {89, 68, 63, 58, 37}, {32, 93, 88, 83, 19}, {40, 50, 81, 65, 79}},
-		{{31, 53, 112, 109, 10}, {12, 82, 34, 87, 100}, {103, 3, 105, 8, 96}, {113, 57, 9, 62, 74}, {56, 120, 55, 49, 35}},
-		{{121, 108, 7, 20, 59}, {29, 28, 122, 125, 11}, {51, 15, 41, 124, 84}, {78, 54, 99, 24, 60}, {36, 110, 46, 22, 101}},
-	}
-	fmt.Println("Initial objective function value:", objectiveFunction.OF(initialCube))
-}
-
-// func main() {
-// 	meanSAHC, meanHCWSM, meanSHC, meanSA := 0.0, 0.0, 0.0, 0.0
-// 	mvSAHC, mvHCWSM, mvSHC, mvSA := 0, 0, 0, 0
-
-// 	for i := 0; i < 10; i++ {
-// 		// Randomize a new cube for each iteration
-// 		initial := deepCopyCube(cubeFuncs.RandomizeCube(cubeFuncs.MakeCube()))
-
-// 		// Steepest Ascent Hill Climb
-// 		cube := deepCopyCube(initial)
-// 		start := time.Now()
-// 		cube = algorithms.SteepestAscentHillClimb(cube)
-// 		meanSAHC += time.Since(start).Seconds()
-// 		mvSAHC += objectiveFunction.OF(cube)
-
-// 		// Hill Climb with Sideways Move
-// 		cube = deepCopyCube(initial)
-// 		start = time.Now()
-// 		cube = algorithms.HillClimbWithSidewaysMove(cube)
-// 		meanHCWSM += time.Since(start).Seconds()
-// 		mvHCWSM += objectiveFunction.OF(cube)
-
-// 		// Stochastic Hill Climb
-// 		cube = deepCopyCube(initial)
-// 		start = time.Now()
-// 		cube = algorithms.StochasticHillClimb(cube)
-// 		meanSHC += time.Since(start).Seconds()
-// 		mvSHC += objectiveFunction.OF(cube)
-
-// 		// Simulated Annealing
-// 		cube = deepCopyCube(initial)
-// 		start = time.Now()
-// 		cube = algorithms.SimulatedAnnealing(cube)
-// 		meanSA += time.Since(start).Seconds()
-// 		mvSA += objectiveFunction.OF(cube)
-// 	}
-
-// 	fmt.Println("Mean time taken for Steepest Ascent Hill Climb:", meanSAHC/10)
-// 	fmt.Println("Mean value of objective function for Steepest Ascent Hill Climb:", mvSAHC/10)
-// 	fmt.Println("Mean time taken for Hill Climb with Sideways Move:", meanHCWSM/10)
-// 	fmt.Println("Mean value of objective function for Hill Climb with Sideways Move:", mvHCWSM/10)
-// 	fmt.Println("Mean time taken for Stochastic Hill Climb:", meanSHC/10)
-// 	fmt.Println("Mean value of objective function for Stochastic Hill Climb:", mvSHC/10)
-// 	fmt.Println("Mean time taken for Simulated Annealing:", meanSA/10)
-// 	fmt.Println("Mean value of objective function for Simulated Annealing:", mvSA/10)
-// }
-
-// Assuming deepCopyCube is a utility function that creates a deep copy of the cube
-// func deepCopyCube(cube [5][5][5]int) [5][5][5]int {
-// 	newCube := cube
-// 	return newCube
-// }
