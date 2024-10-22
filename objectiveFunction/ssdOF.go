@@ -5,11 +5,6 @@ package objectiveFunction
 func SSDOF(cube [5][5][5]int) int {
 	totalSum := 0
 	target := 315
-	RCPMult := 2
-	FDMult := 3
-	SDMult := 1
-	ACMult := 4
-	auxiliaryTarget := 189
 
 	// Helper function to calculate squared difference
 	squaredDifference := func(sum, target int) int {
@@ -26,9 +21,9 @@ func SSDOF(cube [5][5][5]int) int {
 				colSum += cube[z][x][y]
 				pillarSum += cube[x][y][z]
 			}
-			totalSum += squaredDifference(rowSum, target) * RCPMult
-			totalSum += squaredDifference(colSum, target) * RCPMult
-			totalSum += squaredDifference(pillarSum, target) * RCPMult
+			totalSum += squaredDifference(rowSum, target)
+			totalSum += squaredDifference(colSum, target)
+			totalSum += squaredDifference(pillarSum, target)
 		}
 	}
 
@@ -40,8 +35,8 @@ func SSDOF(cube [5][5][5]int) int {
 			diagSum1 += cube[z][i][i]
 			diagSum2 += cube[z][i][4-i]
 		}
-		totalSum += squaredDifference(diagSum1, target) * FDMult
-		totalSum += squaredDifference(diagSum2, target) * FDMult
+		totalSum += squaredDifference(diagSum1, target)
+		totalSum += squaredDifference(diagSum2, target)
 	}
 
 	for y := 0; y < 5; y++ {
@@ -51,8 +46,8 @@ func SSDOF(cube [5][5][5]int) int {
 			diagSum3 += cube[i][y][i]
 			diagSum4 += cube[4-i][y][i]
 		}
-		totalSum += squaredDifference(diagSum3, target) * FDMult
-		totalSum += squaredDifference(diagSum4, target) * FDMult
+		totalSum += squaredDifference(diagSum3, target)
+		totalSum += squaredDifference(diagSum4, target)
 	}
 
 	for x := 0; x < 5; x++ {
@@ -62,8 +57,8 @@ func SSDOF(cube [5][5][5]int) int {
 			diagSum5 += cube[i][i][x]
 			diagSum6 += cube[4-i][i][x]
 		}
-		totalSum += squaredDifference(diagSum5, target) * FDMult
-		totalSum += squaredDifference(diagSum6, target) * FDMult
+		totalSum += squaredDifference(diagSum5, target)
+		totalSum += squaredDifference(diagSum6, target)
 	}
 
 	// Calculate the sum of squares of differences for space diagonals
@@ -74,21 +69,10 @@ func SSDOF(cube [5][5][5]int) int {
 		spaceDiag3 += cube[i][4-i][i]
 		spaceDiag4 += cube[4-i][4-i][i]
 	}
-	totalSum += squaredDifference(spaceDiag1, target) * SDMult
-	totalSum += squaredDifference(spaceDiag2, target) * SDMult
-	totalSum += squaredDifference(spaceDiag3, target) * SDMult
-	totalSum += squaredDifference(spaceDiag4, target) * SDMult
-
-	// Calculate the sum of squares of differences for auxiliary 3x3 cube (centered at [2][2][2])
-	// Rows, columns, and pillars passing through the center
-	totalSum += squaredDifference(cube[1][2][2]+cube[2][2][2]+cube[3][2][2], auxiliaryTarget) * ACMult
-	totalSum += squaredDifference(cube[2][1][2]+cube[2][2][2]+cube[2][3][2], auxiliaryTarget) * ACMult
-	totalSum += squaredDifference(cube[2][2][1]+cube[2][2][2]+cube[2][2][3], auxiliaryTarget) * ACMult
-	// Diagonals passing through the center
-	totalSum += squaredDifference(cube[1][1][1]+cube[2][2][2]+cube[3][3][3], auxiliaryTarget) * ACMult
-	totalSum += squaredDifference(cube[1][3][1]+cube[2][2][2]+cube[3][1][3], auxiliaryTarget) * ACMult
-	totalSum += squaredDifference(cube[3][1][1]+cube[2][2][2]+cube[1][3][3], auxiliaryTarget) * ACMult
-	totalSum += squaredDifference(cube[1][1][3]+cube[2][2][2]+cube[3][3][1], auxiliaryTarget) * ACMult
+	totalSum += squaredDifference(spaceDiag1, target)
+	totalSum += squaredDifference(spaceDiag2, target)
+	totalSum += squaredDifference(spaceDiag3, target)
+	totalSum += squaredDifference(spaceDiag4, target)
 
 	return totalSum
 }
