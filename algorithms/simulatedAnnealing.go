@@ -16,7 +16,7 @@ func SimulatedAnnealing(cube [5][5][5]int) [5][5][5]int {
 		// Update temperature based on iteration number
 
 		if iteration < 1000 {
-			return T * 0.99
+			return T * 0.999999
 		} else if iteration < 10000 {
 			return T * 0.9999
 		} else if iteration < 100000 {
