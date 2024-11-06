@@ -85,8 +85,7 @@ func SSDOF(cube [5][5][5]int) int {
 	centralValue := cube[2][2][2]
 	totalSum += squaredDifference(centralValue, 63)
 
-	// Check lines through center (x + y + 63 = 189)
-	// For each direction (x, y, z)
+	// inner cube
 	for i := 0; i < 5; i++ {
 		if i != 2 { // Skip center position
 			// X direction through center
