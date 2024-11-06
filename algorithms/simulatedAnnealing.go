@@ -22,7 +22,7 @@ func SimulatedAnnealing(cube [5][5][5]int) [5][5][5]int {
 		} else if iteration < 100000 {
 			return T * 0.99995
 		} else {
-			return T * 0.999993
+			return T * 0.99999
 		}
 	}
 
