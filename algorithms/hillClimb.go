@@ -3,6 +3,7 @@ package algorithms
 import (
 	"DiagonalMagicCube/cubeFuncs"
 	"DiagonalMagicCube/objectiveFunction"
+	"sync"
 )
 
 func SteepestAscentHillClimb(cube [5][5][5]int) [5][5][5]int {
@@ -49,4 +50,27 @@ func StochasticHillClimb(cube [5][5][5]int) [5][5][5]int {
 		}
 	}
 	return cube
+}
+
+func RandomRestartHillClimb(cube [5][5][5]int) [5][5][5]int {
+	var bestcube = cube
+	var mu sync.Mutex
+	var wg sync.WaitGroup
+
+	for i := 0; i < 10; i++ { // repeat n times
+		wg.Add(1)
+		go func() {
+			defer wg.Done()
+			newcube := cubeFuncs.RandomizeCube(cube)
+			newcube = SteepestAscentHillClimb(newcube)
+			mu.Lock()
+			if objectiveFunction.OF(newcube) > objectiveFunction.OF(bestcube) { // new successor is better than current -> update current
+				bestcube = newcube
+			}
+			mu.Unlock()
+		}()
+	}
+
+	wg.Wait()
+	return bestcube
 }

@@ -6,7 +6,6 @@ import (
 
 func MakeCube() [5][5][5]int {
 	// Create a 5x5x5 cube with values from 1 to 125
-
 	var cube [5][5][5]int
 	num := 1
 	for i := 0; i < 5; i++ {
