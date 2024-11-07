@@ -51,7 +51,7 @@ func SaveEcxperimentResult(results AlgorithmResult, run int) error {
 	}
 
 	// filename and path
-	filename := fmt.Sprintf("display/cubes/%s/%s_%d.json", dirname, results.Algorithm, run)
+	filename := fmt.Sprintf("docs/cubes/%s/%s_%d.json", dirname, results.Algorithm, run)
 
 	// Marshal results to JSON
 	file, err := json.MarshalIndent(results, "", " ")
