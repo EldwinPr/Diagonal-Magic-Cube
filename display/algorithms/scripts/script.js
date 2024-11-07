@@ -3,6 +3,8 @@ let data = null;
 let isPlaying = false;
 let currentStateIndex = 0;
 let playbackSpeed = 1;
+let rotationX = -30;
+let rotationY = 45;
 
 // Format duration from nanoseconds to readable format
 function formatDuration(nanoseconds) {
