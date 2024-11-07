@@ -5,6 +5,22 @@
     <link rel="stylesheet" type="text/css" href="style.css">
 </head>
 <body>
+    <header>
+        <div class="header-content">
+            <h1>Diagonal Magic Cube Display</h1>
+            <div class="algorithm-selector">
+                <select id="algorithmSelect" onchange="window.location.href=this.value;">
+                    <option value="">Pilih Algoritma</option>
+                    <option value="SAHC.html">Steepest Ascent Hill Climb</option>
+                    <option value="HCWSM.html">Hill Climb With Sideways Move</option>
+                    <option value="RRHC.html">Random Restart Hill Climb</option>
+                    <option value="SHC.html">Stochastic Hill Climb</option>
+                    <option value="SA.html">Simulated Annealing</option>
+                </select>
+            </div>
+        </div>
+    </header>
+
     <div class="container">
         <div class="left-panel">
             <h1>Hill Climb With Sideways Moves</h1>

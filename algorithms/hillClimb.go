@@ -51,8 +51,8 @@ func SteepestAscentHillClimb(cube [5][5][5]int) types.AlgorithmResult {
 				Action:    "Move",
 			})
 
-			i++
 		}
+		i++
 	}
 
 	// record final state
@@ -110,8 +110,6 @@ func HillClimbWithSidewaysMoves(cube [5][5][5]int, maxSidewaysMoves int) types.A
 				Action:    "Sideways Move",
 			})
 
-			i++
-
 		} else if objectiveFunction.OF(newcube) < objectiveFunction.OF(cube) {
 			sidewaysCount = 0
 			cube = newcube
@@ -124,11 +122,10 @@ func HillClimbWithSidewaysMoves(cube [5][5][5]int, maxSidewaysMoves int) types.A
 				Action:    "Move",
 			})
 
-			i++
-
 		} else {
 			exit = true
 		}
+		i++
 	}
 
 	// record final state
@@ -211,23 +208,23 @@ func RandomRestartHillClimb(cube [5][5][5]int, amount int) types.AlgorithmResult
 	starttime := time.Now()
 	bestcube := cube
 	bestcubeOF := objectiveFunction.OF(cube)
+	j := 1
 
 	// random restart loop
 	for i := 0; i < amount; i++ {
+		// initialize variables
+		exit := false
+
 		if i > 0 {
 			cube = cubeFuncs.RandomizeCube(cube)
 			// Record restart state
 			results.States = append(results.States, types.IterationState{
-				Iteration: 0,
+				Iteration: j,
 				Cube:      cube,
 				OF:        objectiveFunction.OF(cube),
 				Action:    "restart",
 			})
 		}
-
-		// initialize variables
-		exit := false
-		j := 1
 
 		// main loop (modified steepest ascent hill climb)
 		for !exit {
@@ -250,8 +247,8 @@ func RandomRestartHillClimb(cube [5][5][5]int, amount int) types.AlgorithmResult
 					Action:    "Move",
 				})
 
-				j++
 			}
+			j++
 		}
 
 		if objectiveFunction.OF(cube) < bestcubeOF { // finds best cube
