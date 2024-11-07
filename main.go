@@ -61,7 +61,7 @@ func main() {
 		fmt.Println("All algorithms has been executed")
 	}
 
-	fs := http.FileServer(http.Dir("docs"))
+	fs := http.FileServer(http.Dir("display"))
 	http.Handle("/", fs)
 
 	fmt.Println("Server starting at http://localhost:8080")
