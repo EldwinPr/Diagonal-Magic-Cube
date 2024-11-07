@@ -3,48 +3,101 @@ package algorithms
 import (
 	"DiagonalMagicCube/cubeFuncs"
 	"DiagonalMagicCube/objectiveFunction"
+	"DiagonalMagicCube/types"
 	"math"
 	"math/rand"
+	"time"
 )
 
-func SimulatedAnnealing(cube [5][5][5]int) [5][5][5]int {
-	T := 3000000000.0 // Initial temperature
-	iteration := 1    // Iteration number
+func SimulatedAnnealing(cube [5][5][5]int) types.AlgorithmResult {
 
-	// helper function to update temperature
+	// Schedule function for temperature
 	Schedule := func(T float64, iteration int) float64 {
-		// Update temperature based on iteration number
-
 		if iteration < 1000 {
-			return T * 0.999999
+			return T * 0.995 // Faster cooling at start
+		} else if iteration < 5000 {
+			return T * 0.999
 		} else if iteration < 10000 {
-			return T * 0.9999
-		} else if iteration < 100000 {
-			return T * 0.99995
+			return T * 0.9995
 		} else {
-			return T * 0.99999
+			return T * 0.99993
 		}
 	}
 
+	// initialize results
+	results := types.AlgorithmResult{
+		Algorithm:   "Simulated Annealing",
+		InitialCube: cube,
+		InitialOF:   objectiveFunction.OF(cube),
+		States:      make([]types.IterationState, 0),
+	}
+
+	T := 3000000000.0 // initial temperature
+
+	// record initial state
+	results.States = append(results.States, types.IterationState{
+		Iteration:   0,
+		Cube:        cube,
+		OF:          objectiveFunction.OF(cube),
+		Action:      "Initial",
+		Temperature: T,
+	})
+
+	// initialize variables
+	var newcube [5][5][5]int
 	exit := false
+	i := 1
+	starttime := time.Now()
+
 	for !exit {
-		T = Schedule(T, iteration) // Update temperature
-		iteration++
+		T = Schedule(T, i) // Update temperature
+		i++
 		if T < 0.0005 { // Exit if temperature is too low
 			exit = true
 		}
 
-		newcube := cubeFuncs.FindSuccessor(cube)
+		newcube = cubeFuncs.FindSuccessor(cube)
 		deltaE := objectiveFunction.OF(newcube) - objectiveFunction.OF(cube)
 
-		if deltaE < 0 { // New cube has lower objective function value -> update current
+		// Check if new cube has lower objective function value
+		if deltaE < 0 {
 			cube = newcube
-		} else { // New cube has higher objective function value
+
+			// record state
+			results.States = append(results.States, types.IterationState{
+				Iteration:   i,
+				Cube:        cube,
+				OF:          objectiveFunction.OF(cube),
+				Action:      "Move",
+				Temperature: T,
+			})
+
+		} else {
+
+			// Accept new cube with probability
 			prob := math.Exp(-float64(deltaE) / T)
-			if rand.Float64() < prob { // Accept new cube with random probability
+
+			// Check if new cube has higher objective function value
+			if rand.Float64() < prob {
 				cube = newcube
+
+				// record state
+				results.States = append(results.States, types.IterationState{
+					Iteration:   i,
+					Cube:        cube,
+					OF:          objectiveFunction.OF(cube),
+					Action:      "Backward Move",
+					Temperature: T,
+				})
 			}
 		}
+
 	}
-	return cube
+
+	// record final state
+	results.FinalCube = cube
+	results.FinalOF = objectiveFunction.OF(cube)
+	results.Duration = time.Since(starttime)
+
+	return results
 }
