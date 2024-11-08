@@ -222,3 +222,19 @@ h1 {
     transform-origin: bottom;
     transform: translateY(0px) rotateX(-90deg);
 }
+
+/* chart */
+.chart-section {
+    max-width: 1400px;
+    margin: 40px auto 0;
+    padding: 0 20px;
+}
+
+.chart-section h3 {
+    color: #333;
+    margin-bottom: 20px;
+}
+
+#ofChart {
+    min-height: 300px;
+}
