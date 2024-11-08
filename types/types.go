@@ -29,7 +29,7 @@ type IterationState struct {
 	OF          int          `json:"OF"`
 	AvgOF       float64      `json:"avgOF"`
 	Temperature float64      `json:"temperature"`
-	Prob        float64      `json:"prob"`
+	Prob        float32      `json:"prob"`
 	Population  int          `json:"population"`
 	Action      string       `json:"action"`
 }
