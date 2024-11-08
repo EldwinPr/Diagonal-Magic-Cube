@@ -32,7 +32,7 @@ func SimulatedAnnealing(cube [5][5][5]int) types.AlgorithmResult {
 		States:      make([]types.IterationState, 0),
 	}
 
-	T := 3000000000.0 // initial temperature
+	T := rand.Float64() * 2000000000.0 // initial temperature
 
 	// record initial state
 	results.States = append(results.States, types.IterationState{
@@ -59,6 +59,8 @@ func SimulatedAnnealing(cube [5][5][5]int) types.AlgorithmResult {
 		newcube = cubeFuncs.FindSuccessor(cube)
 		deltaE := objectiveFunction.OF(newcube) - objectiveFunction.OF(cube)
 
+		prob := math.Exp(-float64(deltaE) / T)
+
 		// Check if new cube has lower objective function value
 		if deltaE < 0 {
 			cube = newcube
@@ -70,12 +72,11 @@ func SimulatedAnnealing(cube [5][5][5]int) types.AlgorithmResult {
 				OF:          objectiveFunction.OF(cube),
 				Action:      "Move",
 				Temperature: T,
+				Prob:        prob,
 			})
+			results.CustomVar++
 
 		} else {
-
-			// Accept new cube with probability
-			prob := math.Exp(-float64(deltaE) / T)
 
 			// Check if new cube has higher objective function value
 			if rand.Float64() < prob {
@@ -88,6 +89,7 @@ func SimulatedAnnealing(cube [5][5][5]int) types.AlgorithmResult {
 					OF:          objectiveFunction.OF(cube),
 					Action:      "Backward Move",
 					Temperature: T,
+					Prob:        prob,
 				})
 			}
 		}
@@ -95,6 +97,15 @@ func SimulatedAnnealing(cube [5][5][5]int) types.AlgorithmResult {
 	}
 
 	// record final state
+	results.States = append(results.States, types.IterationState{
+		Iteration:   i,
+		Cube:        cube,
+		OF:          objectiveFunction.OF(cube),
+		Action:      "Final State",
+		Temperature: T,
+		Prob:        0,
+	})
+
 	results.FinalCube = cube
 	results.FinalOF = objectiveFunction.OF(cube)
 	results.Duration = time.Since(starttime)

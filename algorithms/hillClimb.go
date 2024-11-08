@@ -28,7 +28,6 @@ func SteepestAscentHillClimb(cube [5][5][5]int) types.AlgorithmResult {
 	// initialize variables
 	var newcube [5][5][5]int
 	exit := false
-	i := 1
 	starttime := time.Now()
 
 	// main loop
@@ -36,26 +35,32 @@ func SteepestAscentHillClimb(cube [5][5][5]int) types.AlgorithmResult {
 		// find best successor
 		newcube = cubeFuncs.FindBestSuccessor(cube)
 
-		// check if new successor is better than current
+		// exit if new successor is not better than current
 		if objectiveFunction.OF(newcube) >= objectiveFunction.OF(cube) {
-			exit = true // exit if not
-
-		} else { // continue if yes
-			cube = newcube
-
-			// record state
-			results.States = append(results.States, types.IterationState{
-				Iteration: i,
-				Cube:      cube,
-				OF:        objectiveFunction.OF(cube),
-				Action:    "Move",
-			})
-
+			exit = true
 		}
-		i++
+
+		// move to new successor
+		cube = newcube
+
+		// record state
+		results.States = append(results.States, types.IterationState{
+			Iteration: len(results.States),
+			Cube:      cube,
+			OF:        objectiveFunction.OF(cube),
+			Action:    "Move",
+		})
+
 	}
 
 	// record final state
+	results.States = append(results.States, types.IterationState{
+		Iteration: len(results.States),
+		Cube:      cube,
+		OF:        objectiveFunction.OF(cube),
+		Action:    "Final state",
+	})
+
 	results.FinalCube = cube
 	results.FinalOF = objectiveFunction.OF(cube)
 	results.Duration = time.Since(starttime)
@@ -86,11 +91,11 @@ func HillClimbWithSidewaysMoves(cube [5][5][5]int, maxSidewaysMoves int) types.A
 	var newcube [5][5][5]int
 	sidewaysCount := 0
 	exit := false
-	i := 1
 	starttime := time.Now()
 
 	// main loop
 	for !exit {
+
 		// find best successor
 		newcube = cubeFuncs.FindBestSuccessor(cube)
 
@@ -98,25 +103,25 @@ func HillClimbWithSidewaysMoves(cube [5][5][5]int, maxSidewaysMoves int) types.A
 		if objectiveFunction.OF(newcube) > objectiveFunction.OF(cube) {
 			exit = true // exit if not
 
-		} else if objectiveFunction.OF(newcube) == objectiveFunction.OF(cube) && sidewaysCount < maxSidewaysMoves {
+		} else if objectiveFunction.OF(newcube) == objectiveFunction.OF(cube) && sidewaysCount < maxSidewaysMoves { // sideways move
 			sidewaysCount++
 			cube = newcube
 
 			// record state
 			results.States = append(results.States, types.IterationState{
-				Iteration: i,
+				Iteration: len(results.States),
 				Cube:      cube,
 				OF:        objectiveFunction.OF(cube),
 				Action:    "Sideways Move",
 			})
 
-		} else if objectiveFunction.OF(newcube) < objectiveFunction.OF(cube) {
+		} else if objectiveFunction.OF(newcube) < objectiveFunction.OF(cube) { // move to new successor
 			sidewaysCount = 0
 			cube = newcube
 
 			// record state
 			results.States = append(results.States, types.IterationState{
-				Iteration: i,
+				Iteration: len(results.States),
 				Cube:      cube,
 				OF:        objectiveFunction.OF(cube),
 				Action:    "Move",
@@ -125,10 +130,16 @@ func HillClimbWithSidewaysMoves(cube [5][5][5]int, maxSidewaysMoves int) types.A
 		} else {
 			exit = true
 		}
-		i++
 	}
 
 	// record final state
+	results.States = append(results.States, types.IterationState{
+		Iteration: len(results.States),
+		Cube:      cube,
+		OF:        objectiveFunction.OF(cube),
+		Action:    "Final state",
+	})
+
 	results.FinalCube = cube
 	results.FinalOF = objectiveFunction.OF(cube)
 	results.Duration = time.Since(starttime)
@@ -157,10 +168,12 @@ func StochasticHillClimb(cube [5][5][5]int, amount int) types.AlgorithmResult {
 
 	// initialize variables
 	var newcube [5][5][5]int
+	nomoves := 0
+	maxnomoves := 10000
 	starttime := time.Now()
 
 	// main loop
-	for i := 0; i < amount; i++ { // repeat n times
+	for i := 1; i < amount+1; i++ { // repeat n times
 		newcube = cubeFuncs.FindSuccessor(cube)
 		if objectiveFunction.OF(newcube) < objectiveFunction.OF(cube) {
 			cube = newcube
@@ -172,10 +185,22 @@ func StochasticHillClimb(cube [5][5][5]int, amount int) types.AlgorithmResult {
 				OF:        objectiveFunction.OF(cube),
 				Action:    "Move",
 			})
+		} else {
+			nomoves++
+			if nomoves == maxnomoves {
+				break
+			}
 		}
 	}
 
 	// record final state
+	results.States = append(results.States, types.IterationState{
+		Iteration: len(results.States),
+		Cube:      cube,
+		OF:        objectiveFunction.OF(cube),
+		Action:    "Final state",
+	})
+
 	results.FinalCube = cube
 	results.FinalOF = objectiveFunction.OF(cube)
 	results.Duration = time.Since(starttime)
@@ -208,7 +233,6 @@ func RandomRestartHillClimb(cube [5][5][5]int, amount int) types.AlgorithmResult
 	starttime := time.Now()
 	bestcube := cube
 	bestcubeOF := objectiveFunction.OF(cube)
-	j := 1
 
 	// random restart loop
 	for i := 0; i < amount; i++ {
@@ -219,7 +243,7 @@ func RandomRestartHillClimb(cube [5][5][5]int, amount int) types.AlgorithmResult
 			cube = cubeFuncs.RandomizeCube(cube)
 			// Record restart state
 			results.States = append(results.States, types.IterationState{
-				Iteration: j,
+				Iteration: len(results.States),
 				Cube:      cube,
 				OF:        objectiveFunction.OF(cube),
 				Action:    "restart",
@@ -228,33 +252,41 @@ func RandomRestartHillClimb(cube [5][5][5]int, amount int) types.AlgorithmResult
 
 		// main loop (modified steepest ascent hill climb)
 		for !exit {
+
 			// find best successor
 			newcube = cubeFuncs.FindBestSuccessor(cube)
 
-			// check if new successor is better than current
+			// exit if new successor is not better than current
 			if objectiveFunction.OF(newcube) >= objectiveFunction.OF(cube) {
-				exit = true // exit if not
-				results.IterPerRestart[i] = j
+				exit = true
 
-			} else { // continue if yes
-				cube = newcube
-
-				// record state
-				results.States = append(results.States, types.IterationState{
-					Iteration: j,
-					Cube:      cube,
-					OF:        objectiveFunction.OF(cube),
-					Action:    "Move",
-				})
-
+				// record iteration count for each restart
+				results.IterPerRestart[i] = len(results.States)
 			}
-			j++
+
+			cube = newcube // move to new successor
+
+			// record state
+			results.States = append(results.States, types.IterationState{
+				Iteration: len(results.States),
+				Cube:      cube,
+				OF:        objectiveFunction.OF(cube),
+				Action:    "Move",
+			})
 		}
 
 		if objectiveFunction.OF(cube) < bestcubeOF { // finds best cube
 			bestcube = cube
 			bestcubeOF = objectiveFunction.OF(cube)
 		}
+
+		// record final restart state
+		results.States = append(results.States, types.IterationState{
+			Iteration: len(results.States),
+			Cube:      cube,
+			OF:        objectiveFunction.OF(cube),
+			Action:    "Final state",
+		})
 	}
 
 	// record final state

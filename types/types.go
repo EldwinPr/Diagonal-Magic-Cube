@@ -17,7 +17,7 @@ type AlgorithmResult struct {
 	FinalOF        int              `json:"finalOF"`
 	InitialOF      int              `json:"initialOF"`
 	Duration       time.Duration    `json:"duration"`
-	CustomVar      int              `json:"cutsomVar"` // custom variable for HCWSM, RRHC, and SHC
+	CustomVar      int              `json:"customVar"` // custom variable for HCWSM, RRHC, and SHC
 	IterPerRestart []int            `json:"forRRHC"`
 	States         []IterationState `json:"states"`
 }
@@ -29,6 +29,7 @@ type IterationState struct {
 	OF          int          `json:"OF"`
 	AvgOF       float64      `json:"avgOF"`
 	Temperature float64      `json:"temperature"`
+	Prob        float64      `json:"prob"`
 	Population  int          `json:"population"`
 	Action      string       `json:"action"`
 }

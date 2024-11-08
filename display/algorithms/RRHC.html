@@ -23,7 +23,7 @@
 
     <div class="container">
         <div class="left-panel">
-            <h1>Random Restart Hill Climb</h1>
+            <h2>Random Restart Hill Climb</h2>
             <div class="run-selector">
                 <select id="runSelect">
                     <option value="run1">Run 1</option>
@@ -37,6 +37,7 @@
                 <div>Amount of Restarts: <span id="Restart">0</span></div>
                 <div>Initial Objective Value: <span id="InitOF">0</span></div>
                 <div>Final Objective Value: <span id="FinalOF">0</span></div>
+                <div>Best Objective value: <span id="BestOF">0</span></div>
                 <div>Total Iteration: <span id="TotalI">-</span></div>
                 <div>Duration: <span id="Duration">-</span></div>
             </div>
@@ -47,7 +48,6 @@
                 <div>Iteration: <span id="iteration">0</span></div>
                 <div>Objective Value: <span id="ofValue">0</span></div>
                 <div>Action: <span id="action">-</span></div>
-                <div>Temperature: <span id="temperature">-</span></div>
             </div>
         </div>
 
@@ -69,7 +69,17 @@
         </div>
     </div>
 
+    <div class="chart-section">
+        <h3>Objective Function Progress</h3>
+        <div id="ofChart-container" style="height: 300px; width: 100%; max-width: 1400px; margin: 0 auto;">
+            <canvas id="ofChart"></canvas>
+        </div>
+    </div>
+
     <script src="scripts/script.js"></script>
     <script src="scripts/RRHC.js"></script>
+    <script src="scripts/visualizer.js"></script>
+    <script src="scripts/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.0/chart.min.js"></script>
 </body>
 </html>
