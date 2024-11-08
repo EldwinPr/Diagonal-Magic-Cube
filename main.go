@@ -83,22 +83,15 @@ func main() {
 
 		// SA 1
 		results = algorithms.SimulatedAnnealing(cube1)
-		err := types.SaveEcxperimentResult(results, 1)
-		if err != nil {
-			fmt.Printf("Error saving results: %v\n", err)
-		}
+		types.SaveEcxperimentResult(results, 1)
+
 		// SA 2
 		results = algorithms.SimulatedAnnealing(cube2)
 		types.SaveEcxperimentResult(results, 2)
-		if err != nil {
-			fmt.Printf("Error saving results: %v\n", err)
-		}
+
 		// SA 3
 		results = algorithms.SimulatedAnnealing(cube3)
 		types.SaveEcxperimentResult(results, 3)
-		if err != nil {
-			fmt.Printf("Error saving results: %v\n", err)
-		}
 
 		fmt.Printf("Execution time: %v\n", time.Since(timestart))
 		fmt.Println("All algorithms has been executed")
