@@ -15,11 +15,11 @@ async function loadData(runNumber) {
         document.getElementById('stuck').textContent = 1 - (data.customVar / (data.states[data.states.length-1].iteration));
         document.getElementById('Duration').textContent = formatDuration(data.duration);
 
-        // Create chart data - Include prob value
+        // Create chart data
         const chartData = data.states.map(state => ({
             iteration: state.iteration,
             OF: state.OF,
-            prob: state.prob  // Add this!
+            prob: state.prob
         }));
 
         // Create both charts
