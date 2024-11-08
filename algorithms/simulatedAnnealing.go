@@ -20,7 +20,7 @@ func SimulatedAnnealing(cube [5][5][5]int) types.AlgorithmResult {
 		} else if iteration < 10000 {
 			return T * 0.9995
 		} else {
-			return T * 0.99993
+			return T * 0.999935
 		}
 	}
 
@@ -32,7 +32,7 @@ func SimulatedAnnealing(cube [5][5][5]int) types.AlgorithmResult {
 		States:      make([]types.IterationState, 0),
 	}
 
-	T := rand.Float64() * 2000000000.0 // initial temperature
+	T := rand.Float64() * 3000000000.0 // initial temperature
 
 	// record initial state
 	results.States = append(results.States, types.IterationState{
@@ -65,6 +65,11 @@ func SimulatedAnnealing(cube [5][5][5]int) types.AlgorithmResult {
 		if deltaE < 0 {
 			cube = newcube
 
+			// avoid prob > 1 (avoid infinite numbers)
+			if prob > 1 {
+				prob = 1
+			}
+
 			// record state
 			results.States = append(results.States, types.IterationState{
 				Iteration:   i,
@@ -72,7 +77,7 @@ func SimulatedAnnealing(cube [5][5][5]int) types.AlgorithmResult {
 				OF:          objectiveFunction.OF(cube),
 				Action:      "Move",
 				Temperature: T,
-				Prob:        prob,
+				Prob:        float32(prob),
 			})
 			results.CustomVar++
 
@@ -89,7 +94,7 @@ func SimulatedAnnealing(cube [5][5][5]int) types.AlgorithmResult {
 					OF:          objectiveFunction.OF(cube),
 					Action:      "Backward Move",
 					Temperature: T,
-					Prob:        prob,
+					Prob:        float32(prob),
 				})
 			}
 		}
@@ -103,7 +108,6 @@ func SimulatedAnnealing(cube [5][5][5]int) types.AlgorithmResult {
 		OF:          objectiveFunction.OF(cube),
 		Action:      "Final State",
 		Temperature: T,
-		Prob:        0,
 	})
 
 	results.FinalCube = cube

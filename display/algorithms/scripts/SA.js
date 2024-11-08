@@ -1,5 +1,4 @@
 // Load data based on selected run
-// Load data based on selected run
 async function loadData(runNumber) {
     try {
         const response = await fetch(`/cubes/SA/Simulated Annealing_${runNumber}.json`);
@@ -8,29 +7,22 @@ async function loadData(runNumber) {
         }
         data = await response.json();
         
-        // Debug logs
-        console.log('Last iteration:', data.states[data.states.length-1].iteration);
-        console.log('Total states:', data.states.length);
-        
         // Update info
         document.getElementById('InitOF').textContent = data.initialOF;
         document.getElementById('InitT').textContent = data.initialTemp;
         document.getElementById('FinalOF').textContent = data.finalOF;
-        document.getElementById('stuck').textContent = 1 - (data.customVar / (data.states[data.states.length-1].iteration));
         document.getElementById('TotalI').textContent = data.states[data.states.length-1].iteration;
+        document.getElementById('stuck').textContent = 1 - (data.customVar / (data.states[data.states.length-1].iteration));
         document.getElementById('Duration').textContent = formatDuration(data.duration);
 
-        // Create chart data
+        // Create chart data - Include prob value
         const chartData = data.states.map(state => ({
             iteration: state.iteration,
-            OF: state.OF
+            OF: state.OF,
+            prob: state.prob  // Add this!
         }));
-        
-        // Debug log for chart data
-        console.log('First chart point:', chartData[0]);
-        console.log('Last chart point:', chartData[chartData.length-1]);
 
-        // Create chart
+        // Create both charts
         createChart(chartData);
         
         // Initialize player controls
@@ -66,7 +58,11 @@ function displayState(stateIndex) {
     displayCube(state.cube);
 
     if (myChart) {
-        currentStateIndex = stateIndex;  // Use stateIndex for chart marker
+        currentStateIndex = stateIndex;  
         myChart.update();
+    }
+    if (probChart) {
+        currentStateIndex = stateIndex;
+        probChart.update();
     }
 }

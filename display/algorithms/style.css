@@ -225,9 +225,11 @@ h1 {
 
 /* chart */
 .chart-section {
+    height: 300px;
+    width: 100%;
     max-width: 1400px;
-    margin: 40px auto 0;
-    padding: 0 20px;
+    margin: 0 auto;
+    margin-bottom: 40px;
 }
 
 .chart-section h3 {

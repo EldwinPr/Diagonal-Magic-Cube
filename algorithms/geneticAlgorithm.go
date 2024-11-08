@@ -3,17 +3,32 @@ package algorithms
 import (
 	"DiagonalMagicCube/cubeFuncs"
 	"DiagonalMagicCube/objectiveFunction"
+	"DiagonalMagicCube/types"
 	"math/rand"
+	"time"
 )
 
-func GeneticAlgorithm(initialCube [5][5][5]int) [5][5][5]int {
-	// Fixed parameters
-	populationSize := 100
-	maxGenerations := 1000
+func GeneticAlgorithm(initialCube [5][5][5]int, populationSize int, maxGenerations int) types.AlgorithmResult {
+
+	// Initialize result
+	results := types.AlgorithmResult{
+		Algorithm:   "Genetic Algorithm",
+		InitialCube: initialCube,
+		InitialOF:   objectiveFunction.OF(initialCube),
+		States:      make([]types.IterationState, 0),
+	}
+
+	// Record initial state
+	results.States = append(results.States, types.IterationState{
+		Iteration: 0,
+		Cube:      initialCube,
+		OF:        objectiveFunction.OF(initialCube),
+		Action:    "Initial",
+	})
 
 	// Initialize population
 	population := make([][5][5][5]int, populationSize)
-	population[0] = initialCube // Keep initial cube
+	population[0] = initialCube
 	for i := 1; i < populationSize; i++ {
 		population[i] = cubeFuncs.RandomizeCube(initialCube)
 	}
@@ -22,8 +37,12 @@ func GeneticAlgorithm(initialCube [5][5][5]int) [5][5][5]int {
 	bestCube := initialCube
 	bestFitness := objectiveFunction.OF(initialCube)
 
-	// Main loop - generations
+	// initialize time
+	starttime := time.Now()
+
+	// Main loop
 	for generation := 0; generation < maxGenerations; generation++ {
+
 		// Calculate fitness for all cubes
 		fitness := make([]int, populationSize)
 		for i := 0; i < populationSize; i++ {
@@ -36,7 +55,7 @@ func GeneticAlgorithm(initialCube [5][5][5]int) [5][5][5]int {
 
 		// Create new population
 		newPopulation := make([][5][5][5]int, populationSize)
-		newPopulation[0] = bestCube // Keep best cube (elitism)
+		newPopulation[0] = bestCube
 
 		// Generate new individuals
 		for i := 1; i < populationSize; i += 2 {
@@ -65,7 +84,12 @@ func GeneticAlgorithm(initialCube [5][5][5]int) [5][5][5]int {
 		population = newPopulation
 	}
 
-	return bestCube
+	// Record final state
+	results.FinalCube = bestCube
+	results.FinalOF = objectiveFunction.OF(bestCube)
+	results.Duration = time.Since(starttime)
+
+	return results
 }
 
 // Select best cube from random tournament
@@ -85,7 +109,7 @@ func crossover(parent1, parent2 [5][5][5]int) ([5][5][5]int, [5][5][5]int) {
 	child1 := parent1
 	child2 := parent2
 
-	numSwaps := rand.Intn(10) + 5 // 5-15 swaps
+	numSwaps := rand.Intn(10) + 5
 	for i := 0; i < numSwaps; i++ {
 		x := rand.Intn(5)
 		y := rand.Intn(5)
@@ -98,7 +122,7 @@ func crossover(parent1, parent2 [5][5][5]int) ([5][5][5]int, [5][5][5]int) {
 
 // Swap some random positions in the cube
 func mutate(cube [5][5][5]int) [5][5][5]int {
-	numSwaps := rand.Intn(3) + 1 // 1-3 swaps
+	numSwaps := rand.Intn(3) + 1
 	for i := 0; i < numSwaps; i++ {
 		x1, y1, z1 := rand.Intn(5), rand.Intn(5), rand.Intn(5)
 		x2, y2, z2 := rand.Intn(5), rand.Intn(5), rand.Intn(5)
