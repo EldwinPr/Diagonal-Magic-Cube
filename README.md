@@ -8,5 +8,3 @@ catatan:
 - Simulated Annealing lama karena json-nya gede
 - disaranin buat disable web caching
 - kalau mau hapus result bisa "go run main.go clear"
-
-TODO: lanjutin GA

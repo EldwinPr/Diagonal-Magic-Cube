@@ -15,6 +15,7 @@ async function loadData(runNumber) {
         document.getElementById('FinalOF').textContent = data.finalOF;
         document.getElementById('TotalI').textContent = data.states.length;
         document.getElementById('Duration').textContent = formatDuration(data.duration);
+        document.getElementById('Comp').textContent = (100 - ((data.finalOF / data.initialOF)*100)).toFixed(4);
         
         // Create chart data
         const chartData = data.states.map(state => ({

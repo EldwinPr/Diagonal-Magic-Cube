@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Simulated Annealing</title>
+    <title>Genetic Algorithm</title>
     <link rel="stylesheet" type="text/css" href="style.css">
 </head>
 <body>
@@ -24,7 +24,7 @@
 
     <div class="container">
         <div class="left-panel">
-            <h2>Simulated Annealing</h2>
+            <h2>Genetic Algorithm</h2>
             <div class="run-selector">
                 <select id="runSelect">
                     <option value="run1">Run 1</option>
@@ -36,10 +36,9 @@
             <div class="info-panel">
                 <h3>Local Search Information</h3>
                 <div>Initial Objective Value: <span id="InitOF">0</span></div>
-                <div>Initial Temperature: <span id="InitT">0</span></div>
+                <div>Population Size: <span id="Pop">0</span></div>
                 <div>Final Objective Value: <span id="FinalOF">0</span></div>
                 <div>Total Iteration: <span id="TotalI">-</span></div>
-                <div>Stuck Frequency: <span id="stuck">0.0</span></div>
                 <div>Duration: <span id="Duration">-</span></div>
                 <div style="font-weight: 500;"><span id="Comp" style="font-weight: 700;">-</span>% Reduction</div>
             </div>
@@ -48,8 +47,7 @@
                 <h3>Current State Information</h3>
                 <div>Iteration: <span id="iteration">0</span></div>
                 <div>Objective Value: <span id="ofValue">0</span></div>
-                <div>Temperature: <span id="temp">0</span></div>
-                <div>e ^(delta e / t): <span id="prob">0.0</span></div>
+                <div>Avg Objective Value: <span id="avgOF">0</span></div>
                 <div>Action: <span id="action">-</span></div>
             </div>
         </div>
@@ -79,13 +77,13 @@
         </div>
         
         <div class="chart-section">
-            <h3>Acceptance Probability (e^(ΔE/T))</h3>
-            <canvas id="probChart"></canvas>
+            <h3>AVG Objective Function</h3>
+            <canvas id="avgChart"></canvas>
         </div>
     </div>
 
     <script src="scripts/script.js"></script>
-    <script src="scripts/SA.js"></script>
+    <script src="scripts/GA.js"></script>
     <script src="scripts/visualizer.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.0/chart.min.js"></script>
 </body>
