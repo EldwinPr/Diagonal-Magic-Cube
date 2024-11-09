@@ -11,6 +11,7 @@ async function loadData(runNumber) {
         // Update info
         document.getElementById('InitOF').textContent = data.initialOF;
         document.getElementById('FinalOF').textContent = data.finalOF;
+        document.getElementById('MaxI').textContent = data.customVar;
         document.getElementById('TotalI').textContent = data.states[data.states.length-1].iteration;
         document.getElementById('Duration').textContent = formatDuration(data.duration);
         document.getElementById('Comp').textContent = (100 - ((data.finalOF / data.initialOF)*100)).toFixed(4);
