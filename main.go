@@ -29,7 +29,8 @@ func main() {
 		cube := cubeFuncs.MakeCube() // Create a 5x5x5 cube with values from 1 to 125
 		timestart := time.Now()
 
-		maxmoves, SHCiters, RRHCiters := 100, 20000, 3
+		maxmoves, SHCiters, RRHCiters, population1, population2, population3, maxGenerations := 100, 20000, 3, 100, 150, 200, 5000 // default values
+		population := 100
 
 		// fmt.Print("max amount of sideways moves: ")
 		// fmt.Scan(&maxmoves)
@@ -37,6 +38,14 @@ func main() {
 		// fmt.Scan(&SHCiters)
 		// fmt.Print("amount of iterations for RRHC: ")
 		// fmt.Scan(&RRHCiters)
+		// fmt.Print("population 1 size for GA: ")
+		// fmt.Scan(&population1)
+		// fmt.Print("population 2 size for GA: ")
+		// fmt.Scan(&population2)
+		// fmt.Print("population  3size for GA: ")
+		// fmt.Scan(&population3)
+		// fmt.Print("max amount of generations for GA: ")
+		// fmt.Scan(&maxGenerations)
 
 		for i := 1; i < 4; i++ {
 			cube := cubeFuncs.RandomizeCube(cube)
@@ -59,6 +68,18 @@ func main() {
 
 			// SA
 			results = algorithms.SimulatedAnnealing(cube)
+			types.SaveEcxperimentResult(results, i)
+
+			// GA
+			switch i {
+			case 1:
+				population = population1
+			case 2:
+				population = population2
+			case 3:
+				population = population3
+			}
+			results = algorithms.GeneticAlgorithm(cube, population, maxGenerations)
 			types.SaveEcxperimentResult(results, i)
 		}
 

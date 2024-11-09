@@ -83,22 +83,22 @@ func SSDOF(cube [5][5][5]int) int {
 
 	// Check central value (should be 63)
 	centralValue := cube[2][2][2]
-	totalSum += squaredDifference(centralValue, 63)
+	totalSum += squaredDifference(centralValue, 63) * 10
 
 	// inner cube
 	for i := 0; i < 5; i++ {
 		if i != 2 { // Skip center position
 			// X direction through center
 			sum := cube[i][2][2] + cube[4-i][2][2] + centralValue
-			totalSum += squaredDifference(sum, 189)
+			totalSum += squaredDifference(sum, 189) * 5
 
 			// Y direction through center
 			sum = cube[2][i][2] + cube[2][4-i][2] + centralValue
-			totalSum += squaredDifference(sum, 189)
+			totalSum += squaredDifference(sum, 189) * 5
 
 			// Z direction through center
 			sum = cube[2][2][i] + cube[2][2][4-i] + centralValue
-			totalSum += squaredDifference(sum, 189)
+			totalSum += squaredDifference(sum, 189) * 5
 		}
 	}
 
@@ -108,10 +108,10 @@ func SSDOF(cube [5][5][5]int) int {
 	sum3 := cube[0][4][0] + cube[4][0][4] + centralValue
 	sum4 := cube[0][4][4] + cube[4][0][0] + centralValue
 
-	totalSum += squaredDifference(sum1, 189)
-	totalSum += squaredDifference(sum2, 189)
-	totalSum += squaredDifference(sum3, 189)
-	totalSum += squaredDifference(sum4, 189)
+	totalSum += squaredDifference(sum1, 189) * 3
+	totalSum += squaredDifference(sum2, 189) * 3
+	totalSum += squaredDifference(sum3, 189) * 3
+	totalSum += squaredDifference(sum4, 189) * 3
 
 	return totalSum
 }

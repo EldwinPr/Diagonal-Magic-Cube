@@ -10,12 +10,13 @@ async function loadData(runNumber) {
         console.log('Loaded data:', data);
         
         // Update info
-        document.getElementById('Restart').textContent = data.forRRHC.length;
+        document.getElementById('Restart').textContent = data.customArr.length;
         document.getElementById('InitOF').textContent = data.initialOF;
         document.getElementById('FinalOF').textContent = data.states[data.states.length - 1].OF;
         document.getElementById('BestOF').textContent = data.finalOF;
         document.getElementById('TotalI').textContent = data.states.length - 1;
         document.getElementById('Duration').textContent = formatDuration(data.duration);
+        document.getElementById('Comp').textContent = (100 - ((data.finalOF / data.initialOF)*100)).toFixed(4);
         
         // Create chart data
         const chartData = data.states.map(state => ({
@@ -48,8 +49,8 @@ function displayState(stateIndex) {
 
     // find restart number
     let resnum = 1;
-    for (let i = 0; i < data.forRRHC.length; i++) {
-        if (state.iteration >= data.forRRHC[i]) {
+    for (let i = 0; i < data.customArr.length; i++) {
+        if (state.iteration >= data.customArr[i]) {
             resnum++;
         }
     }

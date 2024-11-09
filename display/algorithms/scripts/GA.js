@@ -1,29 +1,28 @@
-// Load data based on selected run
 async function loadData(runNumber) {
     try {
-        const response = await fetch(`/cubes/SA/Simulated Annealing_${runNumber}.json`);
+        const response = await fetch(`/cubes/GA/Genetic Algorithm_${runNumber}.json`);
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
         data = await response.json();
+        console.log('Loaded data:', data);
         
         // Update info
         document.getElementById('InitOF').textContent = data.initialOF;
-        document.getElementById('InitT').textContent = data.initialTemp;
+        document.getElementById('Pop').textContent = data.customVar;
         document.getElementById('FinalOF').textContent = data.finalOF;
-        document.getElementById('TotalI').textContent = data.states[data.states.length-1].iteration;
-        document.getElementById('stuck').textContent = 1 - (data.customVar / (data.states[data.states.length-1].iteration));
+        document.getElementById('TotalI').textContent = data.states.length - 1;
         document.getElementById('Duration').textContent = formatDuration(data.duration);
         document.getElementById('Comp').textContent = (100 - ((data.finalOF / data.initialOF)*100)).toFixed(4);
-        
+
         // Create chart data
-        const chartData = data.states.map(state => ({
+        const chartData = data.states.map((state, index) => ({
             iteration: state.iteration,
             OF: state.OF,
-            prob: state.prob
+            AvgOF: data.customArr[index] // Map the average OF from customArr at the same index
         }));
 
-        // Create both charts
+        // Create chart
         createChart(chartData);
         
         // Initialize player controls
@@ -44,49 +43,50 @@ async function loadData(runNumber) {
 
 // Display state information and cube
 function displayState(stateIndex) {
-    // Remove iteration check as we're using stateIndex directly
     const state = data.states[stateIndex];
     
     // Update state information
     document.getElementById('iteration').textContent = state.iteration;
     document.getElementById('ofValue').textContent = state.OF;
-    document.getElementById('temp').textContent = state.temperature;
-    document.getElementById('prob').textContent = state.prob ? state.prob.toFixed(4) : '-'; // Format probability to 4 decimal places
     document.getElementById('action').textContent = state.action;
     document.getElementById('progress').value = stateIndex;
     
+    // Update avgOF display correctly
+    if (data.customArr && data.customArr[stateIndex] !== undefined) {
+        document.getElementById('avgOF').textContent = data.customArr[stateIndex];
+    }
+
     // Display cube
     displayCube(state.cube);
 
     if (myChart) {
-        currentStateIndex = stateIndex;  
         myChart.update();
     }
-    if (probChart) {
-        currentStateIndex = stateIndex;
-        probChart.update();
+    if (avgChart) {
+        avgChart.update();
     }
 }
 
 //Chart Creation
 let myChart = null;
-let probChart = null;
+let avgChart = null;
 
 function createChart(chartData) {
     const canvas = document.getElementById('ofChart');
     const probCanvas = document.getElementById('probChart');
     const avgCanvas = document.getElementById('avgChart');
     
+    // Safe destroy with null checks
     if (myChart instanceof Chart) {
         myChart.destroy();
     }
-    if (probChart instanceof Chart) {
-        probChart.destroy();
+    if (avgChart instanceof Chart) {
+        avgChart.destroy();
     }
 
     // Reset to null after destroy
     myChart = null;
-    probChart = null;
+    avgChart = null;
 
     // Create OF chart
     myChart = new Chart(canvas, {
@@ -135,23 +135,19 @@ function createChart(chartData) {
         },
         plugins: [createVerticalLinePlugin()]
     });
-
-    // Create probability chart
-    const probData = chartData.map(d => {
-        return {
-            x: d.iteration,
-            y: d.prob !== undefined ? parseFloat(d.prob.toFixed(4)) : 0
-        };
-    });
     
-    probChart = new Chart(probCanvas, {
-        type: 'scatter',
+    // Create Avg chart
+    avgChart = new Chart(avgCanvas, {
+        type: 'line',
         data: {
+            labels: chartData.map(d => d.iteration),
             datasets: [{
-                label: 'e^(ΔE/T)',
-                data: probData,
-                backgroundColor: '#10b981',
-                pointRadius: 2
+                label: 'Average Objective Function',
+                data: chartData.map(d => d.AvgOF),
+                borderColor: '#2563eb',
+                tension: 0.1,
+                pointRadius: 0,
+                borderWidth: 2
             }]
         },
         options: {
@@ -163,31 +159,29 @@ function createChart(chartData) {
             },
             plugins: {
                 tooltip: {
-                    enabled: true,
-                    callbacks: {
-                        label: function(context) {
-                            return `e^(ΔE/T): ${context.parsed.y.toFixed(4)}`;
-                        }
-                    }
+                    enabled: true
                 }
             },
             scales: {
                 x: {
                     type: 'linear',
                     min: 0,
-                    max: chartData[chartData.length-1].iteration
+                    max: chartData[chartData.length-1].iteration,
+                    title: {
+                        display: true,
+                        text: 'Iteration'
+                    }
                 },
                 y: {
-                    min: 0,
-                    max: 1,
-                    ticks: {
-                        callback: function(value) {
-                            return value.toFixed(4);
-                        }
-                    }
+                    title: {
+                        display: true,
+                        text: 'Avg Objective Function'
+                    },
+                    beginAtZero: true
                 }
             }
-        }
+        },
+        plugins: [createVerticalLinePlugin()]
     });
 }
 
@@ -227,4 +221,3 @@ function createVerticalLinePlugin() {
         }
     };
 }
-

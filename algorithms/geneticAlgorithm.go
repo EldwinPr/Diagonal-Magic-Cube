@@ -9,53 +9,73 @@ import (
 )
 
 func GeneticAlgorithm(initialCube [5][5][5]int, populationSize int, maxGenerations int) types.AlgorithmResult {
-
 	// Initialize result
 	results := types.AlgorithmResult{
 		Algorithm:   "Genetic Algorithm",
 		InitialCube: initialCube,
 		InitialOF:   objectiveFunction.OF(initialCube),
 		States:      make([]types.IterationState, 0),
+		CustomVar:   populationSize,
+		CustomArr:   make([]int, 0),
 	}
 
 	// Record initial state
 	results.States = append(results.States, types.IterationState{
-		Iteration: 0,
-		Cube:      initialCube,
-		OF:        objectiveFunction.OF(initialCube),
-		Action:    "Initial",
+		Iteration:  0,
+		Cube:       initialCube,
+		OF:         objectiveFunction.OF(initialCube),
+		Action:     "Initial",
+		Population: populationSize,
 	})
+	results.CustomArr = append(results.CustomArr, 0)
 
 	// Initialize population
 	population := make([][5][5][5]int, populationSize)
 	population[0] = initialCube
 	for i := 1; i < populationSize; i++ {
-		population[i] = cubeFuncs.RandomizeCube(initialCube)
+		population[i] = cubeFuncs.FindSuccessor(initialCube)
 	}
 
 	// Track best solution
 	bestCube := initialCube
 	bestFitness := objectiveFunction.OF(initialCube)
 
-	// initialize time
+	// Initialize time
 	starttime := time.Now()
 
 	// Main loop
 	for generation := 0; generation < maxGenerations; generation++ {
-
-		// Calculate fitness for all cubes
+		// Calculate fitness for all cubes and average
 		fitness := make([]int, populationSize)
+		totalFitness := 0
+
 		for i := 0; i < populationSize; i++ {
 			fitness[i] = objectiveFunction.OF(population[i])
+			totalFitness += fitness[i]
+
 			if fitness[i] < bestFitness {
 				bestFitness = fitness[i]
 				bestCube = population[i]
 			}
 		}
 
+		// Record average fitness for this generation
+		avgFitness := totalFitness / populationSize
+		results.CustomArr = append(results.CustomArr, avgFitness)
+
+		// Record best cube state before next generation
+		results.States = append(results.States, types.IterationState{
+			Iteration:  generation + 1,
+			Cube:       bestCube,
+			OF:         bestFitness,
+			Action:     "Progress",
+			AvgOF:      float64(avgFitness),
+			Population: populationSize,
+		})
+
 		// Create new population
 		newPopulation := make([][5][5][5]int, populationSize)
-		newPopulation[0] = bestCube
+		newPopulation[0] = bestCube // Elitism
 
 		// Generate new individuals
 		for i := 1; i < populationSize; i += 2 {
@@ -85,12 +105,17 @@ func GeneticAlgorithm(initialCube [5][5][5]int, populationSize int, maxGeneratio
 	}
 
 	// Record final state
+	results.States[len(results.States)-1].Action = "Final state"
+
 	results.FinalCube = bestCube
-	results.FinalOF = objectiveFunction.OF(bestCube)
+	results.FinalOF = bestFitness
 	results.Duration = time.Since(starttime)
+	results.CustomVar = populationSize // Store population size
 
 	return results
 }
+
+// Rest of the code remains the same...
 
 // Select best cube from random tournament
 func tournamentSelect(population [][5][5][5]int, fitness []int) [5][5][5]int {

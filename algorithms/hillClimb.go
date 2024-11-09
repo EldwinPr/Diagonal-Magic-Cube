@@ -212,12 +212,12 @@ func RandomRestartHillClimb(cube [5][5][5]int, amount int) types.AlgorithmResult
 
 	// initialize results
 	results := types.AlgorithmResult{
-		Algorithm:      "Random Restart Hill Climb",
-		InitialCube:    cube,
-		InitialOF:      objectiveFunction.OF(cube),
-		CustomVar:      amount,
-		States:         make([]types.IterationState, 0),
-		IterPerRestart: make([]int, amount),
+		Algorithm:   "Random Restart Hill Climb",
+		InitialCube: cube,
+		InitialOF:   objectiveFunction.OF(cube),
+		CustomVar:   amount,
+		States:      make([]types.IterationState, 0),
+		CustomArr:   make([]int, amount),
 	}
 
 	// record initial state
@@ -261,7 +261,7 @@ func RandomRestartHillClimb(cube [5][5][5]int, amount int) types.AlgorithmResult
 				exit = true
 
 				// record iteration count for each restart
-				results.IterPerRestart[i] = len(results.States)
+				results.CustomArr[i] = len(results.States)
 			}
 
 			cube = newcube // move to new successor

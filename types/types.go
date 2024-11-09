@@ -11,15 +11,15 @@ import (
 
 // Stores results of a run
 type AlgorithmResult struct {
-	Algorithm      string           `json:"algorithm"`
-	InitialCube    [5][5][5]int     `json:"initialCube"`
-	FinalCube      [5][5][5]int     `json:"finalCube"`
-	FinalOF        int              `json:"finalOF"`
-	InitialOF      int              `json:"initialOF"`
-	Duration       time.Duration    `json:"duration"`
-	CustomVar      int              `json:"customVar"` // custom variable for HCWSM, RRHC, and SHC
-	IterPerRestart []int            `json:"forRRHC"`
-	States         []IterationState `json:"states"`
+	Algorithm   string           `json:"algorithm"`
+	InitialCube [5][5][5]int     `json:"initialCube"`
+	FinalCube   [5][5][5]int     `json:"finalCube"`
+	FinalOF     int              `json:"finalOF"`
+	InitialOF   int              `json:"initialOF"`
+	Duration    time.Duration    `json:"duration"`
+	CustomVar   int              `json:"customVar"` // used in HCWSM and SA
+	CustomArr   []int            `json:"customArr"` // used in GA and RRHC
+	States      []IterationState `json:"states"`
 }
 
 // Stores values of each iteration
@@ -49,6 +49,8 @@ func SaveEcxperimentResult(results AlgorithmResult, run int) error {
 		dirname = "SHC"
 	case "Simulated Annealing":
 		dirname = "SA"
+	case "Genetic Algorithm":
+		dirname = "GA"
 	}
 
 	// filename and path
