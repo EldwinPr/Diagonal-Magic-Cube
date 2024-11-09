@@ -169,7 +169,8 @@ func StochasticHillClimb(cube [5][5][5]int, amount int) types.AlgorithmResult {
 	// initialize variables
 	var newcube [5][5][5]int
 	nomoves := 0
-	maxnomoves := 10000
+	maxnomoves := 2000
+	lastIter := 20000
 	starttime := time.Now()
 
 	// main loop
@@ -185,17 +186,20 @@ func StochasticHillClimb(cube [5][5][5]int, amount int) types.AlgorithmResult {
 				OF:        objectiveFunction.OF(cube),
 				Action:    "Move",
 			})
+
+			nomoves = 0
 		} else {
 			nomoves++
 			if nomoves == maxnomoves {
 				break
 			}
 		}
+		lastIter = i
 	}
 
 	// record final state
 	results.States = append(results.States, types.IterationState{
-		Iteration: len(results.States),
+		Iteration: lastIter,
 		Cube:      cube,
 		OF:        objectiveFunction.OF(cube),
 		Action:    "Final state",
