@@ -29,8 +29,11 @@ func main() {
 		cube := cubeFuncs.MakeCube() // Create a 5x5x5 cube with values from 1 to 125
 		timestart := time.Now()
 
-		maxmoves, SHCiters, RRHCiters, population1, population2, population3, maxGenerations := 100, 20000, 3, 100, 150, 200, 5000 // default values
-		population := 100
+		maxmoves, SHCiters, RRHCiters := 100, 20000, 3 // default values
+
+		// GA
+		population1, population2, population3 := 100, 150, 200
+		maxGenerations1, maxGenerations2, maxGenerations3 := 5000, 6000, 7000
 
 		// fmt.Print("max amount of sideways moves: ")
 		// fmt.Scan(&maxmoves)
@@ -69,23 +72,25 @@ func main() {
 			// SA
 			results = algorithms.SimulatedAnnealing(cube)
 			types.SaveEcxperimentResult(results, i)
-
-			// GA
-			switch i {
-			case 1:
-				population = population1
-			case 2:
-				population = population2
-			case 3:
-				population = population3
-			}
-			results = algorithms.GeneticAlgorithm(cube, population, maxGenerations)
-			types.SaveEcxperimentResult(results, i)
 		}
+
+		// GA
+		results := algorithms.GeneticAlgorithm(cube, population1, maxGenerations1)
+		types.SaveEcxperimentResult(results, 1)
+		results = algorithms.GeneticAlgorithm(cube, population2, maxGenerations1)
+		types.SaveEcxperimentResult(results, 2)
+		results = algorithms.GeneticAlgorithm(cube, population3, maxGenerations1)
+		types.SaveEcxperimentResult(results, 3)
+		results = algorithms.GeneticAlgorithm(cube, population1, maxGenerations2)
+		types.SaveEcxperimentResult(results, 4)
+		results = algorithms.GeneticAlgorithm(cube, population1, maxGenerations3)
+		types.SaveEcxperimentResult(results, 5)
 
 		fmt.Printf("Execution time: %v\n", time.Since(timestart))
 		fmt.Println("All algorithms has been executed")
 	}
+
+	// GA
 
 	fs := http.FileServer(http.Dir("display"))
 	http.Handle("/", fs)
