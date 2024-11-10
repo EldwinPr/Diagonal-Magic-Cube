@@ -29,7 +29,10 @@ func main() {
 		cube := cubeFuncs.MakeCube() // Create a 5x5x5 cube with values from 1 to 125
 		timestart := time.Now()
 
-		maxmoves, SHCiters, RRHCiters, population1, population2, population3, maxGenerations := 100, 20000, 3, 100, 150, 200, 5000 // default values
+		maxmoves, SHCiters, RRHCiters := 100, 20000, 3 // default values
+		maxGenerations1, maxGenerations2, maxGenerations3 := 5000, 5500, 6000
+		generations := 5000
+		population1, population2, population3 := 100, 150, 200  
 		population := 100
 
 		// fmt.Print("max amount of sideways moves: ")
@@ -71,17 +74,30 @@ func main() {
 			types.SaveEcxperimentResult(results, i)
 
 			// GA
-			switch i {
-			case 1:
-				population = population1
-			case 2:
-				population = population2
-			case 3:
-				population = population3
+			if i == 1 {
+				for j := 1; j < 7; j++ {
+					switch j {
+						case 1:
+							population = population1
+						case 2:
+							population = population2
+						case 3:
+							population = population3
+						case 4:
+							population = population1
+							generations = maxGenerations1
+						case 5:
+							population = population1
+							generations = maxGenerations2
+						case 6:
+							population = population1
+							generations = maxGenerations3
+						}
+					results = algorithms.GeneticAlgorithm(cube, population, generations)
+					types.SaveEcxperimentResult(results, j)
+					}
+				}
 			}
-			results = algorithms.GeneticAlgorithm(cube, population, maxGenerations)
-			types.SaveEcxperimentResult(results, i)
-		}
 
 		fmt.Printf("Execution time: %v\n", time.Since(timestart))
 		fmt.Println("All algorithms has been executed")
