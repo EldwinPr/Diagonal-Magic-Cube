@@ -15,7 +15,7 @@ header {
     justify-content: space-between;
     align-items: center;
     max-width: 1400px;
-    margin: 0 auto;
+    margin: 20 auto;
     padding: 0 20px;
 }
 h1 {
@@ -49,6 +49,7 @@ h1 {
     gap: 40px;
     max-width: 1400px;
     margin: 0 auto;
+    padding: 20px;
 }
 
 .left-panel {
