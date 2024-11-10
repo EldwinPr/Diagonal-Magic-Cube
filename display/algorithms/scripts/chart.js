@@ -2,8 +2,6 @@ let myChart = null;
 
 function createChart(chartData) {
     const canvas = document.getElementById('ofChart');
-    const probCanvas = document.getElementById('probChart');
-    const avgCanvas = document.getElementById('avgChart');
     
     // Safe destroy with null checks
     if (myChart instanceof Chart) {

@@ -18,11 +18,6 @@ function formatDuration(nanoseconds) {
 
 // Event listeners
 document.addEventListener('DOMContentLoaded', function() {
-    // Hide temperature element
-    const tempElement = document.getElementById('temperature');
-    if (tempElement && tempElement.parentElement) {
-        tempElement.parentElement.style.display = 'none';
-    }
     
     // Run selector
     document.getElementById('runSelect').addEventListener('change', function(e) {
