@@ -75,7 +75,6 @@ let probChart = null;
 function createChart(chartData) {
     const canvas = document.getElementById('ofChart');
     const probCanvas = document.getElementById('probChart');
-    const avgCanvas = document.getElementById('avgChart');
     
     if (myChart instanceof Chart) {
         myChart.destroy();
