@@ -75,6 +75,7 @@ func main() {
 		}
 
 		// GA
+		cube = cubeFuncs.RandomizeCube(cube)
 		results := algorithms.GeneticAlgorithm(cube, population1, maxGenerations1)
 		types.SaveEcxperimentResult(results, 1)
 		results = algorithms.GeneticAlgorithm(cube, population2, maxGenerations1)
