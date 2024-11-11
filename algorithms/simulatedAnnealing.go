@@ -31,7 +31,6 @@ func SimulatedAnnealing(cube [5][5][5]int) types.AlgorithmResult {
 		Algorithm:   "Simulated Annealing",
 		InitialCube: cube,
 		InitialOF:   objectiveFunction.OF(cube),
-		CustomVar:   int(T),
 		States:      make([]types.IterationState, 0),
 	}
 

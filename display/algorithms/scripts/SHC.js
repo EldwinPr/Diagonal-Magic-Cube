@@ -42,30 +42,19 @@ async function loadData(runNumber) {
 }
 
 // Display state information and cube
-function displayState(iteration) {
-    // Find the latest state that applies to this iteration
-    let stateIndex = 0;
-    while (stateIndex < data.states.length - 1 && 
-           data.states[stateIndex + 1].iteration <= iteration) {
-        stateIndex++;
-    }
-    
+function displayState(stateIndex) {
     const state = data.states[stateIndex];
     
     // Update state information
-    document.getElementById('iteration').textContent = iteration;
+    document.getElementById('iteration').textContent = state.iteration;
     document.getElementById('ofValue').textContent = state.OF;
-    document.getElementById('action').textContent = 
-        iteration === state.iteration ? state.action : "No Move";
-    document.getElementById('progress').value = iteration;
+    document.getElementById('action').textContent = state.action;
+    document.getElementById('progress').value = stateIndex;
     
-    // Only update cube if at actual state
-    if (iteration === state.iteration) {
-        displayCube(state.cube);
-    }
+    // Display cube
+    displayCube(state.cube);
 
     if (myChart) {
-        currentStateIndex = iteration;  // For chart marker
         myChart.update();
     }
 }

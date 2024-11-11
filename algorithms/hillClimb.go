@@ -178,6 +178,7 @@ func StochasticHillClimb(cube [5][5][5]int, amount int) types.AlgorithmResult {
 		newcube = cubeFuncs.FindSuccessor(cube)
 		if objectiveFunction.OF(newcube) < objectiveFunction.OF(cube) {
 			cube = newcube
+			nomoves = 0
 
 			// record state
 			results.States = append(results.States, types.IterationState{
@@ -186,10 +187,16 @@ func StochasticHillClimb(cube [5][5][5]int, amount int) types.AlgorithmResult {
 				OF:        objectiveFunction.OF(cube),
 				Action:    "Move",
 			})
-
-			nomoves = 0
 		} else {
 			nomoves++
+
+			// record state
+			results.States = append(results.States, types.IterationState{
+				Iteration: i,
+				Cube:      cube,
+				OF:        objectiveFunction.OF(cube),
+				Action:    "No Move",
+			})
 			if nomoves == maxnomoves {
 				break
 			}
