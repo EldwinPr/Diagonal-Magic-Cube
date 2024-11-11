@@ -59,64 +59,49 @@ function displayCube(cube) {
         previousY = e.clientY;
     });
 
-    // Event listener for mouse movement
     document.addEventListener('mousemove', (e) => {
         if (isDragging) {
-            // Calculate the change in mouse position
             const deltaX = e.clientX - previousX;
             const deltaY = e.clientY - previousY;
             
-            // Update rotation based on mouse movement
-            rotationY += deltaX * 0.5; // Adjust rotationY
-            rotationX -= deltaY * 0.5; // Adjust rotationX
+            rotationY += deltaX * 0.5;
+            rotationX -= deltaY * 0.5;
 
-            // Apply rotation to 'numbers' element
             numbers.style.transform = `rotateX(${rotationX}deg) rotateY(${rotationY}deg)`;
             
-            // Update all '.number' elements to face the camera
+            // Update all numbers to face camera
             document.querySelectorAll('.number').forEach(num => {
-                // Extract current transform without rotation
                 const transform = num.style.transform.split('rotateX')[0];
-                // Adjust rotation to negate container's rotation, so numbers face camera
                 num.style.transform = `${transform} rotateX(${-rotationX}deg) rotateY(${-rotationY}deg)`;
             });
             
-            // Update previous mouse positions
             previousX = e.clientX;
             previousY = e.clientY;
         }
     });
 
-    // Event listener for mouse up to stop dragging
     document.addEventListener('mouseup', () => {
         isDragging = false;
     });
 }
 
 // Player controls
-// Function to toggle playback state
 function togglePlay() {
-    isPlaying = !isPlaying; // Toggle play/pause state
-    // Update play/pause button text
+    isPlaying = !isPlaying;
     document.getElementById('playPause').textContent = isPlaying ? 'Pause' : 'Play';
     
     if (isPlaying) {
-        // Start playback interval for animation
         playbackInterval = setInterval(() => {
-            // If reached the end of data states, stop playback
             if (currentStateIndex >= data.states.length - 1) {
                 isPlaying = false;
-                clearInterval(playbackInterval); // Stop the interval
+                document.getElementById('playPause').textContent = 'Play';
+                clearInterval(playbackInterval);
                 return;
             }
-
-            // Move to the next state
             currentStateIndex++;
-            // Update visualization with new state
-            updateVisualization(data.states[currentStateIndex]);
-        }, playbackSpeed); // playbackSpeed is the interval in milliseconds
+            displayState(currentStateIndex);
+        }, 1000 / parseInt(document.getElementById('speed').value));
     } else {
-        // If paused, clear the interval
         clearInterval(playbackInterval);
     }
 }
