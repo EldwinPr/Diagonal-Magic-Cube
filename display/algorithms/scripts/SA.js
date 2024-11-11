@@ -9,7 +9,7 @@ async function loadData(runNumber) {
         
         // Update info
         document.getElementById('InitOF').textContent = data.initialOF;
-        document.getElementById('InitT').textContent = data.initialTemp;
+        document.getElementById('InitT').textContent = data.states[0].temperature.toFixed(4);
         document.getElementById('FinalOF').textContent = data.finalOF;
         document.getElementById('TotalI').textContent = data.states[data.states.length-1].iteration;
         document.getElementById('stuck').textContent = 1 - (data.customVar / (data.states[data.states.length-1].iteration));
@@ -50,7 +50,7 @@ function displayState(stateIndex) {
     // Update state information
     document.getElementById('iteration').textContent = state.iteration;
     document.getElementById('ofValue').textContent = state.OF;
-    document.getElementById('temp').textContent = state.temperature;
+    document.getElementById('temp').textContent = state.temperature.toFixed(4);
     document.getElementById('prob').textContent = state.prob ? state.prob.toFixed(4) : '-'; // Format probability to 4 decimal places
     document.getElementById('action').textContent = state.action;
     document.getElementById('progress').value = stateIndex;
